@@ -1,0 +1,85 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Asterisk::AGI;
+use Data::Dumper;
+use POSIX qw(strftime);
+use DBI;
+use DBD::mysql;
+
+
+my $dbh = DBI->connect('DBI:mysql:multifon', 'multifon', 'soruco');
+
+test();
+exit 0;
+
+my $AGI = new Asterisk::AGI;
+my %input = $AGI->ReadParse();
+
+open (LOG, '>>', '/tmp/astgk.txt');
+select((select(LOG), $| = 1)[0]);
+*STDERR = *LOG;
+
+print STDERR "buh\n";
+
+my $srcep = $AGI->get_full_variable('${CHANNEL(peername)}');
+my $in_id = $input{uniqueid};
+my $in_ani = $input{callerid};
+my $in_dnis = $input{extension};
+
+my $out_dnis = traducir($in_dnis);
+
+debug( "Llamada <$in_id> de <$srcep> a <$in_dnis> (<$out_dnis>)");
+
+$AGI->exec('Dial', "SIP/$out_dnis\@ss");
+
+sub debug {
+  print LOG "$in_id ",strftime("%Y%m%d%H%M%S", localtime())," ",@_,"\n";
+}
+
+sub traducir {
+	my $dnis = shift;
+
+        if ($dnis =~ /^549?(15)?(........)$/) {
+          $dnis = "11$2";
+        } elsif ($dnis =~ /^(00)?549?(.*)$/) {
+          $dnis = $2;
+        } elsif ($dnis =~ /^00/) {
+	  return "INVALIDO (LDI)";
+	} elsif ($dnis =~ /^0(.*)/) {
+          $dnis = $1;
+	} elsif ($dnis =~ /^54(..........)$/) {
+	  $dnis = $1;
+	} elsif ($dnis =~ /15/ && $dnis =~ /^54(............)$/) {
+	  $dnis = $1;
+	} elsif ($dnis =~ /^........$/ || $dnis =~ /^15........$/) {
+          $dnis = "11$dnis";
+        }
+
+	#$dnis =~s/^549?(15?)([0-9]{8})$/5411$1$2/;
+	#$dnis = "5411$dnis" if $dnis =~ /^(15)?[3-9][0-9]{7}$/;
+
+	my @q = ();
+        foreach my $l (2..7) {
+          push @q, "(len=$l and pref='".substr($dnis, 0, length($dnis)-$l)."')";
+	}
+	my $q_ = join(" or ", @q);
+	my $q_2 = $q_;
+	$q_2 =~ s/pref/pref2/g;
+
+	my @r = $dbh->selectrow_array("select modalidad, indicativo, bloque, len from prefijos where $q_ or $q_2");
+	if (@r > 0) {
+		return "54".($r[0] eq 'CPP' ? '9' : '').$r[1].$r[2].substr($dnis, length($dnis)-$r[3]);
+	}
+	return "";
+}
+
+sub test { 
+	my @t = ("01148325037", "1148325037", "541148325037", "00541148325037", "48325037", "0111548325037", "111548325037", "54111548325037", "0054111548325037", "1548325037", "005491148325037", "5491148325037", "5491548325037", "541548325037",
+	"03876837787", "3876837787", "543876837787", "00543876837787", "0387156837787", "387156837787", "54387156837787", "0054387156837787", "00549387156837787", "549387156837787", "549387156837787",
+	"08006108000", "12387156837787");
+
+	for my $t (@t) {
+		print traducir($t)." $t\n";
+	}
+}
