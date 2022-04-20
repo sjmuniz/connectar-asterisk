@@ -40,8 +40,22 @@ sub dnis_anton {
   return "226654".($modalidad eq 'CPP' ? '9' : '')."$indicativo$bloque$tel";
 }
 
-sub discar {
+sub dnis_berazategui {
+  my ($modalidad, $indicativo, $bloque, $tel) = @_;
+
+  return "0054$indicativo".($modalidad eq 'CPP' ? '15' : '')."$bloque$tel";
+}
+
+sub ruteo {
 	my $dnis = shift;
+
+	if ($dnis =~ /^00999001(.*)$/) {
+          return ({out_dnis => $1, ruta => 'iplan', modalidad => 'preseleccion', localidad => ''});
+        } elsif ($dnis =~ /^00999002(.*)$/) {
+          return ({out_dnis => $1, ruta => 'anton', modalidad => 'preseleccion', localidad => ''});
+        } elsif ($dnis =~ /^00999003(.*)$/) {
+          return ({out_dnis => $1, ruta => 'berazategui', modalidad => 'preseleccion', localidad => ''});
+        }
 
         if ($dnis =~ /^549?(15)?(........)$/) {
           $dnis = "11$2";
@@ -76,20 +90,49 @@ sub discar {
 		return;
         }
 
-	my ($ruta) = $dbh->selectrow_array("select ruta from rutas where localidad=".$dbh->quote($localidad)." and modalidad=".$dbh->quote($modalidad)." order by rand() limit 1");
+        my $ruta = $dbh->selectcol_arrayref("select distinct ruta from rutas where localidad=".$dbh->quote($localidad)." and modalidad=".$dbh->quote($modalidad)." order by rand()");
 
-	my $out_dnis =
-	 $ruta eq "iplan" ? dnis_iplan($modalidad, $indicativo, $bloque, substr($dnis, length($dnis)-$len)) :
-	 $ruta eq "anton" ? dnis_anton($modalidad, $indicativo, $bloque, substr($dnis, length($dnis)-$len)) :
-	  "";
+        my @rutas = map { {ruta => $_, localidad => $localidad, modalidad => $modalidad, out_dnis =>
+         $_ eq "iplan" ? dnis_iplan($modalidad, $indicativo, $bloque, substr($dnis, length($dnis)-$len)) :
+         $_ eq "anton" ? dnis_anton($modalidad, $indicativo, $bloque, substr($dnis, length($dnis)-$len)) :
+         $_ eq "berazategui" ? dnis_berazategui($modalidad, $indicativo, $bloque, substr($dnis, length($dnis)-$len)) :
+          "" } } @$ruta;
 
-        debug( "Llamada <$in_id> de <$in_ani> a <$in_dnis> (<$localidad: $modalidad>) -> $ruta <$out_dnis>");
+	return @rutas;
+}
 
-	if ($out_dnis) {
-        	$AGI->exec('Dial', "SIP/$out_dnis\@$ruta");
+sub discar {
+	my $dnis = shift;
+	my $in_setupt = time;
+	my @rutas = ruteo($dnis);
+
+	for my $r (@rutas) {
+		my $out_dnis = $r->{out_dnis};
+		my $ruta = $r->{ruta};
+		my $localidad = $r->{localidad};
+		my $modalidad = $r->{modalidad};
+
+	        debug( "Llamada <$in_id> de <$in_ani> a <$in_dnis> (<$localidad: $modalidad>) -> $ruta <$out_dnis>");
+        	$AGI->exec('Dial', "SIP/$out_dnis\@$ruta,120,g");
 		debug( "Fin llamada <$in_id>" );
-	} else {
-		$AGI->exec('Hangup', 1);
+		
+		my $disct = time;
+		my $dialstatus = $AGI->get_variable('DIALSTATUS');
+		my $connectt = $dialstatus eq 'ANSWER' ? $AGI->get_full_variable('${CDR(answer)}') : undef;
+		my $cause = $AGI->get_variable('HANGUPCAUSE');
+		my $billsec = $AGI->get_full_variable('${CDR(billsec)}');
+	
+		my $st = 
+			"insert into accounting (in_id, in_dnis, dstep, out_dnis, dialstatus, disccause, sessiont, destino, in_ani, connectt, in_setupt, out_disct) values (".
+	                join(',', map {$dbh->quote($_)} ($in_id, $in_dnis, $ruta, $out_dnis, $dialstatus, $cause, $billsec, "$localidad: $modalidad", $in_ani, $connectt)).",".
+	                join(',', map {$_ ? "from_unixtime($_)" : "null"} ($in_setupt, $disct)).
+	                ")";
+		debug($st);
+		$dbh->do($st);
+
+		if ( $dialstatus ne 'CONGESTION' && $dialstatus ne 'CHANUNAVAIL') {
+			last
+		}
 	}
 }
 

@@ -34,7 +34,7 @@ writeprotect=no
 ; things to do, Asterisk will wait for a new extension to be dialed
 ; (this is the original behavior of Asterisk 1.0 and earlier).
 ;
-autofallthrough=yes
+;autofallthrough=no
 ;
 ;
 ;
@@ -243,11 +243,7 @@ exten => _12345678,1,Dial(SIP/${EXTEN}@freepbx)
 
 [from-iplan]
 
-;Derivar Rafa
-exten => _01152739000,1,GotoIfTime(09:00-17:00,*,*,*?rafis)
-exten => _01152739000,n,Hangup()
-exten => _01152739000,n(rafis),Dial(local/01168189029@saliente/n)
-
+exten =>__01152739133,1,Dial(SIP/12343333@freepbx)
 
 ;Horario ATM comercial
 exten => _01152739134,1,GotoIfTime(*,sun,*,*?horarioATM)
@@ -256,74 +252,63 @@ exten => _01152739134,n,GotoIfTime(21:00-23:59,*,*,*?horarioATM)
 exten => _01152739134,n,GotoIfTime(00:00-08:59,*,*,*?horarioATM)
 
 ;Feriados ATM comercial
-exten => _01152739134,n,GotoIfTime(*,*,1,jan?horarioATM) ;añonuevo
-exten => _01152739134,n,GotoIfTime(*,*,28,feb?horarioATM) ;carnaval
-exten => _01152739134,n,GotoIfTime(*,*,1,mar?horarioATM) ;carnaval
-exten => _01152739134,n,GotoIfTime(*,*,24,mar?horarioATM) ;Memoria
-exten => _01152739134,n,GotoIfTime(*,*,2,apr?horarioATM) ;Veterano
-;exten => _01152739134,n,GotoIfTime(*,*,14,apr?horarioATM) ;jueves santo
-exten => _01152739134,n,GotoIfTime(*,*,15,apr?horarioATM) ;Viernes santo
-exten => _01152739134,n,GotoIfTime(*,*,1,may?horarioATM) ;trabajo
-exten => _01152739134,n,GotoIfTime(*,*,18,may?horarioATM) ;Censo
-exten => _01152739134,n,GotoIfTime(*,*,25,may?horarioATM) ;Rev.Mayo
-exten => _01152739134,n,GotoIfTime(*,*,17,jun?horarioATM) ;Guemes
-exten => _01152739134,n,GotoIfTime(*,*,20,jun?horarioATM) ;sanmartin
-exten => _01152739134,n,GotoIfTime(*,*,9,jul?horarioATM) ;indepencencia
-exten => _01152739134,n,GotoIfTime(*,*,15,aug?horarioATM) ;sanmartin
-exten => _01152739134,n,GotoIfTime(*,*,7,oct?horarioATM) ;turistico respeto cultural
-exten => _01152739134,n,GotoIfTime(*,*,10,oct?horarioATM) ;respeto cultural
-exten => _01152739134,n,GotoIfTime(*,*,20,nov?horarioATM) ;Soberania
-exten => _01152739134,n,GotoIfTime(*,*,21,nov?horarioATM) ;soberania turistico
-exten => _01152739134,n,GotoIfTime(*,*,8,dec?horarioATM) ;virgen
-exten => _01152739134,n,GotoIfTime(*,*,9,dec?horarioATM) ;virgen turistico
-exten => _01152739134,n,GotoIfTime(*,*,24,dec?horarioATM) ;navidad
-exten => _01152739134,n,GotoIfTime(*,*,25,dec?horarioATM) ;navidad
-exten => _01152739134,n,GotoIfTime(*,*,31,dec?horarioATM);añonuevo
+exten => _01152739134,n,GotoIfTime(*,*,1,jan?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,24,mar?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,1,apr?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,2,apr?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,1,may?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,24,may?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,25,may?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,20,jun?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,21,jun?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,9,jul?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,16,aug?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,8,oct?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,11,oct?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,22,nov?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,8,dec?horarioATM)
+exten => _01152739134,n,GotoIfTime(*,*,24,dec?horarioATM)
 
 ;Acciones ATM Comercial
 exten => _01152739134,n,Goto(ATM_COMERCIAL,s,1)
 exten => _01152739134,n(horarioATM),Background(/var/lib/asterisk/sounds/ivr/INTRO_ATMCOMERCIAL_FH)
 ;
 ;Horario ATM Atencion
-exten => _0115273913[136],1,GotoIfTime(*,sun,*,*?horarioATM1)
-exten => _0115273913[136],n,GotoIfTime(*,sat,*,*?horarioATM1)
-exten => _0115273913[136],n,GotoIfTime(19:00-23:59,*,*,*?horarioATM1)
-exten => _0115273913[136],n,GotoIfTime(00:00-08:59,*,*,*?horarioATM1)
+exten => _01152739131,1,GotoIfTime(*,sun,*,*?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,sat,*,*?horarioATM1)
+exten => _01152739131,n,GotoIfTime(19:00-23:59,*,*,*?horarioATM1)
+exten => _01152739131,n,GotoIfTime(00:00-08:59,*,*,*?horarioATM1)
 
 ;Feriados ATM Atencion
-exten => _01152739[136],n,GotoIfTime(*,*,1,jan?horarioATM1) ;añonuevo
-exten => _01152739[136],n,GotoIfTime(*,*,28,feb?horarioATM1) ;carnaval
-exten => _01152739[136],n,GotoIfTime(*,*,1,mar?horarioATM1) ;carnaval
-exten => _01152739[136],n,GotoIfTime(*,*,24,mar?horarioATM1) ;Memoria
-exten => _01152739[136],n,GotoIfTime(*,*,2,apr?horarioATM1) ;Veterano
-;exten => _01152739[136],n,GotoIfTime(*,*,14,apr?horarioATM1) ;jueves santo
-exten => _01152739[136],n,GotoIfTime(*,*,15,apr?horarioATM1) ;Viernes santo
-exten => _01152739[136],n,GotoIfTime(*,*,1,may?horarioATM1) ;trabajo
-exten => _01152739[136],n,GotoIfTime(*,*,18,may?horarioATM1) ;Censo
-exten => _01152739[136],n,GotoIfTime(*,*,25,may?horarioATM1) ;Rev.Mayo
-exten => _01152739[136],n,GotoIfTime(*,*,17,jun?horarioATM1) ;Guemes
-exten => _01152739[136],n,GotoIfTime(*,*,20,jun?horarioATM1) ;sanmartin
-exten => _01152739[136],n,GotoIfTime(*,*,9,jul?horarioATM1) ;indepencencia
-exten => _01152739[136],n,GotoIfTime(*,*,15,aug?horarioATM1) ;sanmartin
-exten => _01152739[136],n,GotoIfTime(*,*,7,oct?horarioATM1) ;turistico respeto cultural
-exten => _01152739[136],n,GotoIfTime(*,*,10,oct?horarioATM1) ;respeto cultural
-exten => _01152739[136],n,GotoIfTime(*,*,20,nov?horarioATM1) ;Soberania
-exten => _01152739[136],n,GotoIfTime(*,*,21,nov?horarioATM1) ;soberania turistico
-exten => _01152739[136],n,GotoIfTime(*,*,8,dec?horarioATM1) ;virgen
-exten => _01152739[136],n,GotoIfTime(*,*,9,dec?horarioATM1) ;virgen turistico
-exten => _01152739[136],n,GotoIfTime(*,*,24,dec?horarioATM1) ;navidad
-exten => _01152739[136],n,GotoIfTime(*,*,25,dec?horarioATM1) ;navidad
-exten => _01152739[136],n,GotoIfTime(*,*,31,dec?horarioATM1);añonuevo
+exten => _01152739131,n,GotoIfTime(*,*,1,jan?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,24,mar?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,1,apr?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,2,apr?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,1,may?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,24,may?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,25,may?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,20,jun?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,21,jun?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,9,jul?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,16,aug?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,8,oct?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,11,oct?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,22,nov?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,8,dec?horarioATM1)
+exten => _01152739131,n,GotoIfTime(*,*,24,dec?horarioATM1)
 
 ;Acciones ATM Atencion
-exten => _0115273913[136],n,Goto(ivr_${EXTEN:3}_INTRO,s,1)
-exten => _0115273913[136],n(horarioATM1),Goto(ATM_${EXTEN:3}_FDH,s,1)
-;
-exten => _01152173549,1,Goto(ivr_52739131_INTRO,s,1)
-;exten => _01152173549,1,Dial(SIP/microvoz2/${EXTEN})
-;exten => _01152173549,1,Dial(IAX2/iax_microvoz/55555${EXTEN})
-;exten => _01152173549,n,Hangup()
+exten => _01152739131,n,Goto(ivr_52739131_INTRO,s,1)
+exten => _01152739131,n(horarioATM1),Dial(SIP/10001001@microvoz2)
 
+;
+
+;Derivaciones desde MVOZ Anular cuando liquidemos sistema.
+exten => _12341111,1,Dial(SIP/${EXTEN}@freepbx)
+exten => _12342222,1,Dial(SIP/${EXTEN}@freepbx)
+exten => _12340000,1,Dial(SIP/${EXTEN}@freepbx)
+exten => _12345678,1,Dial(SIP/${EXTEN}@freepbx)
+;
 ;Horario Solnik (y cualquier cosa que no haya sido especificada previamente)
 exten => _X.,1,GotoIfTime(*,sun,*,*?horario)
 exten => _X.,n,GotoIfTime(*,sat,*,*?horario)
@@ -331,33 +316,47 @@ exten => _X.,n,GotoIfTime(18:00-23:59,*,*,*?horario)
 exten => _X.,n,GotoIfTime(00:00-08:59,*,*,*?horario)
 
 ;Feriados Solnik
-exten => _X.,n,GotoIfTime(*,*,1,jan?horario) ;añonuevo
-exten => _X.,n,GotoIfTime(*,*,28,feb?horario) ;carnaval
-exten => _X.,n,GotoIfTime(*,*,1,mar?horario) ;carnaval
-exten => _X.,n,GotoIfTime(*,*,24,mar?horario) ;Memoria
-exten => _X.,n,GotoIfTime(*,*,2,apr?horario) ;Veterano
-;exten => _X.,n,GotoIfTime(*,*,14,apr?horario) ;jueves santo
-exten => _X.,n,GotoIfTime(*,*,15,apr?horario) ;Viernes santo
-exten => _X.,n,GotoIfTime(*,*,1,may?horario) ;trabajo
-exten => _X.,n,GotoIfTime(*,*,18,may?horario) ;Censo
-exten => _X.,n,GotoIfTime(*,*,25,may?horario) ;Rev.Mayo
-exten => _X.,n,GotoIfTime(*,*,17,jun?horario) ;Guemes
-exten => _X.,n,GotoIfTime(*,*,20,jun?horario) ;sanmartin
-exten => _X.,n,GotoIfTime(*,*,9,jul?horario) ;indepencencia
-exten => _X.,n,GotoIfTime(*,*,15,aug?horario) ;sanmartin
-exten => _X.,n,GotoIfTime(*,*,7,oct?horario) ;turistico respeto cultural
-exten => _X.,n,GotoIfTime(*,*,10,oct?horario) ;respeto cultural
-exten => _X.,n,GotoIfTime(*,*,20,nov?horario) ;Soberania
-exten => _X.,n,GotoIfTime(*,*,21,nov?horario) ;soberania turistico
-exten => _X.,n,GotoIfTime(*,*,8,dec?horario) ;virgen
-exten => _X.,n,GotoIfTime(*,*,9,dec?horario) ;virgen turistico
-exten => _X.,n,GotoIfTime(*,*,24,dec?horario) ;navidad
-exten => _X.,n,GotoIfTime(*,*,25,dec?horario) ;navidad
-exten => _X.,n,GotoIfTime(*,*,31,dec?horario);añonuevo
+exten => _X.,n,GotoIfTime(*,*,1,jan?horario)
+exten => _X.,n,GotoIfTime(*,*,24,mar?horario)
+exten => _X.,n,GotoIfTime(*,*,1,apr?horario)
+exten => _X.,n,GotoIfTime(*,*,2,apr?horario)
+exten => _X.,n,GotoIfTime(*,*,1,may?horario)
+exten => _X.,n,GotoIfTime(*,*,24,may?horario)
+exten => _X.,n,GotoIfTime(*,*,25,may?horario)
+exten => _X.,n,GotoIfTime(*,*,20,jun?horario)
+exten => _X.,n,GotoIfTime(*,*,21,jun?horario)
+exten => _X.,n,GotoIfTime(*,*,9,jul?horario)
+exten => _X.,n,GotoIfTime(*,*,16,aug?horario)
+exten => _X.,n,GotoIfTime(*,*,8,oct?horario)
+exten => _X.,n,GotoIfTime(*,*,11,oct?horario)
+exten => _X.,n,GotoIfTime(*,*,22,nov?horario)
+exten => _X.,n,GotoIfTime(*,*,8,dec?horario)
+exten => _X.,n,GotoIfTime(*,*,24,dec?horario)
+
 ;Acciones Solnik
-exten => _X.,n,NoOp(IVR ${EXTEN})
 exten => _X.,n,Goto(ivr_${EXTEN:3}_INTRO,s,1)
 exten => _X.,n(horario),Background(/var/lib/asterisk/sounds/ivr/INTRO_IVR_${EXTEN:3}_FH)
+
+exten => _01152173549,1,Goto(PRUEBA,s,1)
+exten => _01152739136,1,Goto(ATM_PRODUCTORES,s,1)
+exten => _01152739140,1,Goto(ATM_PRODUCTORES,s,1)
+
+[PRUEBA]
+exten => s,1,Answer(500)
+exten => s,n,Dial(SIP/12343333@freepbx)
+
+[ivr_solnikFPBX]
+exten => s,1,NoOp(hola)
+exten => s,n,Answer(500)
+exten => s,n(loop),Background(/var/lib/asterisk/sounds/solnik)
+exten => s,n,WaitExten()
+
+exten => 1,1,Dial(SIP/52173541${DNIS}@freepbx)
+exten => 2,1,Dial(SIP/52173543${DNIS}@freepbx)
+exten => 3,1,Dial(SIP/52173544${DNIS}@freepbx)
+exten => 4,1,Dial(SIP/52173546${DNIS}@freepbx)
+exten => 5,1,Dial(SIP/52173547${DNIS}@freepbx)
+exten => 6,1,Dial(SIP/52173548${DNIS}@freepbx)
 
 
 [sebas1]
@@ -374,7 +373,6 @@ exten => _X.,1,AGI(/etc/asterisk/dial.pl)
 
 exten => _9990.,1,Goto(ivr_login,${EXTEN},1_)
 exten => _98,1,Dial(local/01152739134@saliente/n)
-
 [bitrix]
 exten => _X.,1,AGI(/etc/asterisk/dial.pl)
 
@@ -382,8 +380,6 @@ exten => _X.,1,AGI(/etc/asterisk/dial.pl)
 [saliente]
 exten => _X.,1,AGI(/etc/asterisk/dial.pl)
 
-
-;SOLNIK
 [ivr_52173540_INTRO]
 exten => s,1,Answer(2000)
 exten => s,n,Playback(/var/lib/asterisk/sounds/ivr/INTRO_IVR_52173540_V2)
@@ -435,13 +431,12 @@ exten => _x,n,Goto(ivr_52173540_2,s,1)
 
 
 [ivr_52173540_6]
-exten => s,1,Background(/var/lib/asterisk/sounds/ivr/OPC_IVR_52173545_V2&/var/lib/asterisk/sounds/ivr/OPC_IVR_52173540_6-4&/var/lib/asterisk/sounds/ivr/OPC_REP)
+exten => s,1,Background(/var/lib/asterisk/sounds/ivr/OPC_IVR_52173545_V2&/var/lib/asterisk/sounds/ivr/OPC_REP)
 exten => s,n,WaitExten()
 
 exten => 1,1,Dial(SIP/995217354061@freepbx)
 exten => 2,1,Dial(SIP/995217354062@freepbx)
 exten => 3,1,Dial(SIP/995217354063@freepbx)
-exten => 4,1,Dial(SIP/995217354064@freepbx)
 exten => 0,1,Goto(ivr_52173540_6,s,1)
 exten => _x,1,Background(/var/lib/asterisk/sounds/ivr/OPC_ERROR)
 exten => _x,n,Goto(ivr_52173540_6,s,1)
@@ -473,12 +468,12 @@ exten => s,n,Dial(SIP/995217354200@freepbx)
 
 [ivr_52177920_INTRO]
 exten => s,1,Answer(500)
-exten => s,n,Background(/var/lib/asterisk/sounds/ivr/INTRO_IVR_52177920)
+exten => s,n,Playback(/var/lib/asterisk/sounds/ivr/INTRO_IVR_52177920)
 exten => s,n,Goto(ivr_52177920,s,1)
 
 [ivr_52177920]
-
-exten => s,1,Background(/var/lib/asterisk/sounds/ivr/OPC_IVR_52177920_V2&/var/lib/asterisk/sounds/ivr/OPC_REP)
+exten => s,1,Answer(500)
+exten => s,n,Background(/var/lib/asterisk/sounds/ivr/OPC_IVR_52177920_V3&/var/lib/asterisk/sounds/ivr/OPC_REP)
 exten => s,n,WaitExten()
 exten => 1,1,Dial(SIP/995217792001@freepbx)
 exten => 2,1,Dial(SIP/995217792002@freepbx)
@@ -501,6 +496,11 @@ exten => s,n,WaitExten()
 exten => 1,1,Dial(SIP/12345678@freepbx)
 exten => 2,1,Dial(SIP/12341111@freepbx)
 
+[ATM_PRODUCTORES]
+exten => s,1,Answer(500)
+exten => s,n,Background(/var/lib/asterisk/sounds/ivr/INTRO_IVR_52739136_V1)
+exten => s,n,Dial(SIP/12344444@freepbx)
+;exten => s,n,Dial(SIP/10001006@microvoz2)
 
 ;ATM Customer
 [ivr_52739131_INTRO]
@@ -516,11 +516,12 @@ exten => 1,1,Set(CDR(userfield)=${CDR(userfield)}:${EXTEN})
 exten => 1,n,Goto(ivr_52739131_DNI,s,1)
 
 exten => 2,1,Set(CDR(userfield)=${CDR(userfield)}:${EXTEN})
+;exten => 2,n,Dial(SIP/10001003@microvoz2)
 exten => 2,n,Dial(SIP/12343333@freepbx)
 
 exten => 3,1,Set(CDR(userfield)=${CDR(userfield)}:${EXTEN})
-exten => 3,n,Playback(/var/lib/asterisk/sounds/ivr/Derivacion_productores)
-exten => 3,n,Hangup()
+exten => 3,n,Dial(SIP/12343333@freepbx)
+;exten => 3,n,Dial(SIP/10001004@microvoz2)
 
 [ivr_52739131_DNI]
 exten => s,1,Set(TIMEOUT(digit)=5)
@@ -540,54 +541,12 @@ exten => _X.,n,MySQL(disconnect ${connid})
 exten => _X.,n,GotoIf($["${DNI}" = "1"]?quiroga:otros)
 
 exten => _X.,n(quiroga),Set(CDR(userfield)=${CDR(userfield)}:quiroga)
-exten => _X.,n,Playback(/var/lib/asterisk/sounds/ivr/quiroga)
-;exten => _X.,n,Dial(local/01139870453@saliente/n)
-exten => _X.,n,Dial(SIP/microvoz2/${EXTEN})
-
-
+exten => _X.,n,Dial(local/01139870453@saliente/n)
 exten => _X.,n,Hangup()
 
 exten => _X.,n(otros),Dial(SIP/12343333@freepbx)
 ;exten => _X.,n(otros),Dial(SIP/10001002@microvoz2)
 exten => _X.,n,Hangup()
-
-
-
-[ATM_52739131_FDH]
-exten => s,1,Answer(500)
-exten => s,n,Background(/var/lib/asterisk/sounds/ivr/fdh_ATM_v1)
-exten => s,n,WaitExten()
-
-exten => 1,1,Dial(local/01148358157@saliente/n)
-
-
-;ATM BLACK
-[ivr_52739133_INTRO]
-exten => s,1,Answer(500)
-exten => s,n,Background(/var/lib/asterisk/sounds/ivr/intro_ivr_52739133_v1)
-exten => s,n,WaitExten()
-
-exten => 1,1,Dial(local/1148358158@saliente/n)
-exten => 2,1,Dial(local/1148358158@saliente/n)
-exten => 3,1,Dial(SIP/12345555@freepbx)
-
-[ATM_52739133_FDH]
-exten => s,1,Answer(500)
-exten => s,n,Background(/var/lib/asterisk/sounds/ivr/fdh_ATM_v1)
-exten => s,n,WaitExten()
-
-exten => 1,1,Dial(local/1148358158@saliente/n)
-
-;ATM PRODUCTORES
-[ivr_52739136_INTRO]
-exten => s,1,Answer(500)
-exten => s,n,Background(/var/lib/asterisk/sounds/ivr/INTRO_IVR_52739136_V1)
-exten => s,n,Dial(SIP/12344444@freepbx)
-
-[ATM_52739136_FDH]
-exten => s,1,Answer(500)
-exten => s,n,Playback(/var/lib/asterisk/sounds/ivr/fdh_ATMproductores_v1)
-exten => s,n,Hangup()
 
 [ivr_login]
 
